@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useMonitors, Monitor } from "@/hooks/useMonitors";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { DeleteModal } from "@/components/Delete/page";
+import { DeleteModal } from "@/components/DeleteModal";
 
 export default function Home() {
     const { isAuthenticated, isLoading } = useAuth();
