@@ -1,19 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMonitors, Monitor } from "@/hooks/useMonitors";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { DeleteModal } from "@/components/Delete/page";
 
 export default function Home() {
-    const { monitors, loading, addMonitor, updateMonitor, deleteMonitor } =
-        useMonitors();
+    const { isAuthenticated, isLoading } = useAuth();
+    const router = useRouter();
+
+    // Protege a rota: Se não estiver logado, manda pro login
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            router.push("/login");
+        }
+    }, [isLoading, isAuthenticated, router]);
+
+    const {
+        monitors,
+        loading: monitorsLoading,
+        addMonitor,
+        updateMonitor,
+        deleteMonitor,
+    } = useMonitors();
 
     const [name, setName] = useState("");
     const [url, setUrl] = useState("");
     const [editingId, setEditingId] = useState<number | null>(null);
 
-    // --- NOVOS ESTADOS PARA O MODAL ---
+    // Estados do Modal
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [monitorToDelete, setMonitorToDelete] = useState<number | null>(null);
+
+    // Enquanto verifica a autenticação, mostra carregando
+    if (isLoading || !isAuthenticated) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+                <p className="text-gray-500">Carregando acesso...</p>
+            </div>
+        );
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,21 +69,16 @@ export default function Home() {
         setEditingId(null);
     };
 
-    // --- NOVAS FUNÇÕES PARA O MODAL ---
-
-    // 1. Chamada quando clica no ícone da lixeira
     const openDeleteModal = (id: number) => {
         setMonitorToDelete(id);
         setIsDeleteModalOpen(true);
     };
 
-    // 2. Chamada quando clica em "Cancel" no modal
     const closeDeleteModal = () => {
         setMonitorToDelete(null);
         setIsDeleteModalOpen(false);
     };
 
-    // 3. Chamada quando clica em "Deactivate" (Confirmar) no modal
     const confirmDelete = async () => {
         if (monitorToDelete) {
             await deleteMonitor(monitorToDelete);
@@ -66,15 +88,13 @@ export default function Home() {
 
     return (
         <div className="max-w-3xl mx-auto p-10 font-sans text-gray-800 dark:text-gray-100 relative">
-            {/* CABEÇALHO */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Meus Monitores (Pinger)</h1>
                 <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-800 px-3 py-1 rounded-full">
-                    Atualizando a cada 5s...
+                    Atualizando a cada 60s...
                 </span>
             </div>
 
-            {/* FORMULÁRIO */}
             <form
                 onSubmit={handleSubmit}
                 className={`mb-8 p-6 rounded-lg transition-all ${
@@ -128,8 +148,7 @@ export default function Home() {
                 </div>
             </form>
 
-            {/* LISTAGEM */}
-            {loading ? (
+            {monitorsLoading ? (
                 <p className="text-center text-gray-500">Carregando...</p>
             ) : (
                 <ul className="space-y-4">
@@ -160,7 +179,6 @@ export default function Home() {
                             </div>
 
                             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                                {/* STATUS BADGE */}
                                 <span
                                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${
                                         m.status === "up"
@@ -177,7 +195,6 @@ export default function Home() {
                                         : "OFFLINE 🔴"}
                                 </span>
 
-                                {/* BOTÕES DE AÇÃO */}
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleEditClick(m)}
@@ -187,7 +204,6 @@ export default function Home() {
                                         ✏️
                                     </button>
 
-                                    {/* ALTERAÇÃO AQUI: Usamos openDeleteModal em vez de confirm() */}
                                     <button
                                         onClick={() => openDeleteModal(m.id)}
                                         className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition"
@@ -202,61 +218,11 @@ export default function Home() {
                 </ul>
             )}
 
-            {/* --- MODAL DE CONFIRMAÇÃO (ESTILO DA IMAGEM) --- */}
-            {isDeleteModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto overflow-x-hidden bg-black/50 backdrop-blur-sm transition-opacity">
-                    {/* Caixa do Modal */}
-                    <div className="relative w-full max-w-md p-6 bg-white rounded-lg shadow-xl dark:bg-neutral-800 sm:p-8">
-                        {/* Cabeçalho e Ícone */}
-                        <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-900 dark:bg-red-900/20">
-                                <svg
-                                    className="w-11 h-11 text-red-600 dark:text-red-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                    ></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    DELETAR MONITOR
-                                </h3>
-                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-                                    Confirma que desejar deletar este monitor? Esta
-                                    ação não pode ser desfeita.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Botões de Ação */}
-                        <div className="mt-6 flex justify-center gap-3">
-                            <button
-                                onClick={closeDeleteModal}
-                                type="button"
-                                className="px-4 py-2 text-sm font-medium text-white dark:bg-neutral-700 rounded-lg hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:hover:bg-neutral-900 dark:focus:ring-gray-800 transition"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                type="button"
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 transition"
-                            >
-                                Deletar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* --- FIM DO MODAL --- */}
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onConfirm={confirmDelete}
+            />
         </div>
     );
 }
