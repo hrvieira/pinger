@@ -1,0 +1,83 @@
+import { Injectable, UnauthorizedException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { LoginDto } from './dto/login.dto';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
+  
+  async login(loginDto: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: loginDto.email},
+    });
+
+    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+      throw new UnauthorizedException('Email ou senha incorretos.');
+    };
+
+    if (!user.isApproved) {
+      throw new ForbiddenException('Cadastro enviado, esperando aprovação.');
+    }
+
+    return {
+      access_token: this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+        role: user.role
+      }),
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    };
+  }
+
+  async register(createAuthDto: CreateAuthDto) {
+    const email = createAuthDto.email.toLowerCase();
+
+    const allowedDomains = ['@outlook.com', '@hotmail.com', '@gmail.com'];
+    const isDomainValid = allowedDomains.some(domain => email.endsWith(domain));
+
+    if (!isDomainValid) {
+      throw new BadRequestException('O email deve ser de um domínio permitido: @outlook.com, @hotmail.com, @gmail.com');
+    }
+
+    const exists = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (exists) {
+      if (!exists.isApproved) {
+        throw new BadRequestException('Este email já foi cadastrado e está aguardando aprovação.');
+      }
+
+      throw new BadRequestException('Este email já está cadastrado.');
+    }
+
+    const hashedPassword = await bcrypt.hash(createAuthDto.password, 10);
+
+    await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name: createAuthDto.name,
+        role: 'USER',
+        isApproved: false,
+      },
+    });
+
+    return {
+      message:
+        'Cadastro enviado para análise. Aguarde a aprovação do administrador para logar.',
+    };
+
+  }
+
+}
