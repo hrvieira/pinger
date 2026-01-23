@@ -87,20 +87,22 @@ export default function Home() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-10 font-sans text-gray-800 dark:text-gray-100 relative">
+        // Padding ajustado (py-8 em vez de p-10) para balancear com o Header
+        <div className="max-w-3xl mx-auto py-8 px-4 font-sans text-gray-800 dark:text-gray-100 relative">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Meus Monitores (Pinger)</h1>
-                <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-800 px-3 py-1 rounded-full">
-                    Atualizando a cada 60s...
+                <h2 className="text-xl font-bold">Dashboard</h2>
+                <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-800 px-3 py-1 rounded-full flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Ao vivo
                 </span>
             </div>
 
             <form
                 onSubmit={handleSubmit}
-                className={`mb-8 p-6 rounded-lg transition-all ${
+                className={`mb-8 p-6 rounded-lg transition-all shadow-sm ${
                     editingId
                         ? "bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
-                        : "bg-gray-100 dark:bg-gray-900"
+                        : "bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-800"
                 }`}
             >
                 <h3
@@ -149,13 +151,15 @@ export default function Home() {
             </form>
 
             {monitorsLoading ? (
-                <p className="text-center text-gray-500">Carregando...</p>
+                <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
             ) : (
                 <ul className="space-y-4">
                     {monitors.map((m) => (
                         <li
                             key={m.id}
-                            className="border border-gray-200 dark:border-gray-800 p-4 rounded-lg bg-white dark:bg-neutral-900 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                            className="border border-gray-200 dark:border-gray-800 p-4 rounded-lg bg-white dark:bg-neutral-900 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:shadow-md transition-shadow"
                         >
                             <div className="flex-1">
                                 <strong className="text-lg block mb-1">
@@ -164,15 +168,41 @@ export default function Home() {
                                 <a
                                     href={m.url}
                                     target="_blank"
-                                    className="text-blue-600 dark:text-blue-400 text-sm hover:underline break-all"
+                                    className="text-blue-600 dark:text-blue-400 text-sm hover:underline break-all flex items-center gap-1"
                                 >
                                     {m.url}
+                                    <svg
+                                        className="w-3 h-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                        ></path>
+                                    </svg>
                                 </a>
                                 {m.lastChecked && (
-                                    <div className="text-xs text-gray-400 mt-1">
-                                        Última checagem:{" "}
+                                    <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                                        <svg
+                                            className="w-3 h-3"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            ></path>
+                                        </svg>
+                                        Checado às{" "}
                                         {new Date(
-                                            m.lastChecked
+                                            m.lastChecked,
                                         ).toLocaleTimeString()}
                                     </div>
                                 )}
@@ -180,25 +210,34 @@ export default function Home() {
 
                             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                                 <span
-                                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${
+                                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase border flex items-center gap-1.5 ${
                                         m.status === "up"
-                                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-900"
+                                            ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900"
                                             : m.status === "pending"
-                                            ? "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900"
-                                            : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900"
+                                              ? "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900"
+                                              : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900"
                                     }`}
                                 >
+                                    <span
+                                        className={`w-2 h-2 rounded-full ${
+                                            m.status === "up"
+                                                ? "bg-green-500"
+                                                : m.status === "pending"
+                                                  ? "bg-yellow-500"
+                                                  : "bg-red-500"
+                                        }`}
+                                    ></span>
                                     {m.status === "up"
-                                        ? "ONLINE 🟢"
+                                        ? "ONLINE"
                                         : m.status === "pending"
-                                        ? "..."
-                                        : "OFFLINE 🔴"}
+                                          ? "AGUARDE"
+                                          : "OFFLINE"}
                                 </span>
 
-                                <div className="flex gap-2">
+                                <div className="flex gap-1 border-l border-gray-200 dark:border-gray-700 pl-3 ml-1">
                                     <button
                                         onClick={() => handleEditClick(m)}
-                                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition"
+                                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-full transition"
                                         title="Editar"
                                     >
                                         ✏️
@@ -206,7 +245,7 @@ export default function Home() {
 
                                     <button
                                         onClick={() => openDeleteModal(m.id)}
-                                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition"
+                                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition"
                                         title="Excluir"
                                     >
                                         🗑️
