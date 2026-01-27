@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,30 @@ export class AuthService {
         'Cadastro enviado para análise. Aguarde a aprovação do administrador para logar.',
     };
 
+  }
+
+  async updatePassword(userId: number, updateAuthDto: UpdateAuthDto) {
+    if (!updateAuthDto.currentPassword || !updateAuthDto.newPassword) {
+      throw new BadRequestException('Senha atual e nova senha são obrigatórias.');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) throw new UnauthorizedException('Usuário não encontrado.');
+
+    const isMatch = await bcrypt.compare(updateAuthDto.currentPassword, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('A senha atual está incorreta.');
+    }
+
+    const hashedNewPassword = await bcrypt.hash(updateAuthDto.newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedNewPassword},
+    });
+
+    return { message: 'Senha atualizada com sucesso.' };
   }
 
 }

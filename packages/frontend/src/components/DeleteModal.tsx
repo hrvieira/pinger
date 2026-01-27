@@ -13,7 +13,7 @@ export function DeleteModal({ isOpen, onClose, onConfirm }: DeleteModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto overflow-x-hidden bg-black/50 backdrop-blur-sm transition-opacity">
             <div className="relative w-full max-w-md p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800 sm:p-8">
                 <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20">
+                    <div className="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20">
                         <svg
                             className="w-6 h-6 text-red-600 dark:text-red-500"
                             fill="none"
