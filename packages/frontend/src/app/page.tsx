@@ -123,7 +123,7 @@ export default function Home() {
                         onChange={(e) => setName(e.target.value)}
                     />
                     <input
-                        className="flex-[2] p-3 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-800 outline-none focus:border-blue-500 transition"
+                        className="flex-2 p-3 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-800 outline-none focus:border-blue-500 transition"
                         placeholder="URL (ex: https://uol.com.br)"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
