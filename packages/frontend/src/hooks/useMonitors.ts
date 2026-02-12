@@ -9,7 +9,8 @@ export interface Monitor {
     lastChecked: string;
 }
 
-const API_URL = "http://127.0.0.1:3000/monitors";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000";
+const API_URL = `${API_BASE}/monitors`;
 
 export function useMonitors() {
     const [monitors, setMonitors] = useState<Monitor[]>([]);
@@ -34,15 +35,22 @@ export function useMonitors() {
         try {
             const res = await fetch(API_URL);
             const data = await res.json();
-            setMonitors(data);
+            // Garante que é um array antes de setar
+            if (Array.isArray(data)) {
+                setMonitors(data);
+            } else {
+                setMonitors([]);
+            }
             setLoading(false);
         } catch (error) {
             console.error("Erro ao buscar:", error);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchMonitors();
+        // Atualiza a cada 60 segundos
         const interval = setInterval(fetchMonitors, 60000);
         return () => clearInterval(interval);
     }, []);
