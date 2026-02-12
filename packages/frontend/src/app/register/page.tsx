@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // <--- 1. Importe o hook
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
     const [name, setName] = useState("");
@@ -10,7 +10,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState({ text: "", type: "" });
 
-    const router = useRouter(); // <--- 2. Inicialize o router
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,10 +34,7 @@ export default function RegisterPage() {
             setEmail("");
             setPassword("");
 
-            // <--- 3. Adicione o redirecionamento
-            // Vamos dar um pequeno delay (2s) para o usuário ler a mensagem de sucesso antes de ir para o login?
-            // Para o teste passar direto, pode ser sem delay, mas com delay fica melhor para UX.
-            // Como o teste usa 'waitFor', ele vai esperar acontecer.
+            // Redireciona para login após sucesso
             router.push("/login");
         } catch (err: any) {
             setMessage({ text: err.message, type: "error" });
@@ -51,7 +48,6 @@ export default function RegisterPage() {
                     Criar Conta
                 </h1>
 
-                {/* Caixa de Mensagem (Sucesso ou Erro) */}
                 {message.text && (
                     <div
                         className={`p-4 mb-4 text-sm rounded-lg border ${

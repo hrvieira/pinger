@@ -1,36 +1,29 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Home from "./page";
 
-// --- MOCKS ---
-
-// 1. Mock do Next.js Navigation
 const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({
     useRouter: () => ({ push: mockPush }),
 }));
 
-// 2. Mock do AuthContext
 const mockUseAuth = jest.fn();
 jest.mock("@/context/AuthContext", () => ({
     useAuth: () => mockUseAuth(),
 }));
 
-// 3. Mock do useMonitors
 const mockAddMonitor = jest.fn();
 const mockUpdateMonitor = jest.fn();
 const mockDeleteMonitor = jest.fn();
-const mockUseMonitors = jest.fn(); // Função principal que o componente chama
+const mockUseMonitors = jest.fn();
 
 jest.mock("@/hooks/useMonitors", () => ({
     useMonitors: () => mockUseMonitors(),
 }));
 
-// --- CONFIGURAÇÃO GLOBAL DOS TESTES ---
 describe("Dashboard Page (Home)", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        // Configuração Padrão: Usuário Logado e Sem Monitores
         mockUseAuth.mockReturnValue({
             isAuthenticated: true,
             isLoading: false,
@@ -45,8 +38,6 @@ describe("Dashboard Page (Home)", () => {
         });
     });
 
-    // --- TESTES ---
-
     it("deve redirecionar para login se o usuário NÃO estiver autenticado", () => {
         mockUseAuth.mockReturnValue({
             isAuthenticated: false,
@@ -59,7 +50,6 @@ describe("Dashboard Page (Home)", () => {
     });
 
     it("deve renderizar a lista de monitores corretamente", () => {
-        // Simula que o hook retornou dados
         mockUseMonitors.mockReturnValue({
             monitors: [
                 {
@@ -87,8 +77,8 @@ describe("Dashboard Page (Home)", () => {
 
         expect(screen.getByText("Google")).toBeInTheDocument();
         expect(screen.getByText("Sistema Interno")).toBeInTheDocument();
-        expect(screen.getByText("ONLINE")).toBeInTheDocument(); // Status UP
-        expect(screen.getByText("OFFLINE")).toBeInTheDocument(); // Status DOWN
+        expect(screen.getByText("ONLINE")).toBeInTheDocument();
+        expect(screen.getByText("OFFLINE")).toBeInTheDocument();
     });
 
     it("deve chamar addMonitor ao submeter o formulário", async () => {
@@ -98,13 +88,11 @@ describe("Dashboard Page (Home)", () => {
         const urlInput = screen.getByPlaceholderText(/URL/i);
         const addButton = screen.getByRole("button", { name: /Adicionar/i });
 
-        // Preenche os campos
         fireEvent.change(nameInput, { target: { value: "Novo Site" } });
         fireEvent.change(urlInput, {
             target: { value: "https://novosite.com" },
         });
 
-        // Clica em adicionar
         fireEvent.click(addButton);
 
         await waitFor(() => {
@@ -133,11 +121,9 @@ describe("Dashboard Page (Home)", () => {
 
         render(<Home />);
 
-        // Clica no botão de lápis (title="Editar")
         const editButton = screen.getByTitle("Editar");
         fireEvent.click(editButton);
 
-        // Verifica se os inputs receberam os valores
         expect(
             screen.getByDisplayValue("Site Para Editar"),
         ).toBeInTheDocument();
@@ -145,14 +131,12 @@ describe("Dashboard Page (Home)", () => {
             screen.getByDisplayValue("https://edit.com"),
         ).toBeInTheDocument();
 
-        // Verifica se o botão mudou de texto
         expect(
             screen.getByRole("button", { name: /Salvar/i }),
         ).toBeInTheDocument();
     });
 
     it("deve chamar updateMonitor ao salvar uma edição", async () => {
-        // Setup inicial com um monitor
         mockUseMonitors.mockReturnValue({
             monitors: [
                 {
@@ -170,18 +154,14 @@ describe("Dashboard Page (Home)", () => {
 
         render(<Home />);
 
-        // 1. Entra no modo de edição
         fireEvent.click(screen.getByTitle("Editar"));
 
-        // 2. Altera os valores
         const nameInput = screen.getByDisplayValue("Site Antigo");
         fireEvent.change(nameInput, { target: { value: "Site Novo" } });
 
-        // 3. Salva
         fireEvent.click(screen.getByRole("button", { name: /Salvar/i }));
 
         await waitFor(() => {
-            // Verifica se chamou update com ID correto e novos dados
             expect(mockUpdateMonitor).toHaveBeenCalledWith(
                 10,
                 "Site Novo",
@@ -208,15 +188,12 @@ describe("Dashboard Page (Home)", () => {
 
         render(<Home />);
 
-        // 1. Clica na lixeira
         fireEvent.click(screen.getByTitle("Excluir"));
 
-        // 2. Verifica se o modal apareceu (texto do modal)
         expect(
             screen.getByText(/Are you sure you want to deactivate/i),
         ).toBeInTheDocument();
 
-        // 3. Clica no botão de confirmar do modal (texto do seu botão no DeleteModal)
         fireEvent.click(screen.getByText("Deactivate"));
 
         await waitFor(() => {

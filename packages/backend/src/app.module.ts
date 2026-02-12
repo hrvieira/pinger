@@ -9,9 +9,7 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     MonitorsModule,
     AuthModule,

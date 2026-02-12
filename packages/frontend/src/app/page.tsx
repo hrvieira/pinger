@@ -10,7 +10,7 @@ export default function Home() {
     const { isAuthenticated, isLoading } = useAuth();
     const router = useRouter();
 
-    // Protege a rota: Se não estiver logado, manda pro login
+    // Redireciona para login se não autenticado
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.push("/login");
@@ -29,11 +29,10 @@ export default function Home() {
     const [url, setUrl] = useState("");
     const [editingId, setEditingId] = useState<number | null>(null);
 
-    // Estados do Modal
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [monitorToDelete, setMonitorToDelete] = useState<number | null>(null);
 
-    // Enquanto verifica a autenticação, mostra carregando
+    // Estado de carregamento inicial
     if (isLoading || !isAuthenticated) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -87,7 +86,6 @@ export default function Home() {
     };
 
     return (
-        // Padding ajustado (py-8 em vez de p-10) para balancear com o Header
         <div className="max-w-3xl mx-auto py-8 px-4 font-sans text-gray-800 dark:text-gray-100 relative">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">Dashboard</h2>
@@ -97,6 +95,7 @@ export default function Home() {
                 </span>
             </div>
 
+            {/* ... restante do JSX sem alterações ... */}
             <form
                 onSubmit={handleSubmit}
                 className={`mb-8 p-6 rounded-lg transition-all shadow-sm ${
@@ -105,6 +104,7 @@ export default function Home() {
                         : "bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-800"
                 }`}
             >
+                {/* O conteúdo do formulário e da lista permanece igual */}
                 <h3
                     className={`mb-4 font-semibold ${
                         editingId ? "text-blue-600 dark:text-blue-400" : ""

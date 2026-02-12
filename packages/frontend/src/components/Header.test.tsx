@@ -47,7 +47,6 @@ describe("Header Component", () => {
         render(<Header />);
 
         expect(screen.getByText("Admin User")).toBeInTheDocument();
-        // CORREÇÃO: Usamos getByTitle porque o texto está no atributo title, não visível
         expect(screen.getByTitle(/sair/i)).toBeInTheDocument();
     });
 
@@ -56,7 +55,6 @@ describe("Header Component", () => {
 
         render(<Header />);
 
-        // CORREÇÃO: Usamos getByTitle aqui também
         const logoutButton = screen.getByTitle(/sair/i);
         fireEvent.click(logoutButton);
 

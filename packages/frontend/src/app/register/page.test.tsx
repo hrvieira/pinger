@@ -25,7 +25,6 @@ describe("RegisterPage", () => {
         expect(
             screen.getByRole("heading", { name: /criar conta/i }),
         ).toBeInTheDocument();
-        // CORREÇÃO: Placeholders ajustados conforme seu HTML
         expect(screen.getByPlaceholderText("Seu Nome")).toBeInTheDocument();
         expect(
             screen.getByPlaceholderText("seu@outlook.com"),
@@ -33,7 +32,7 @@ describe("RegisterPage", () => {
         expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
         expect(
             screen.getByRole("button", { name: /cadastrar/i }),
-        ).toBeInTheDocument(); // Ajustado para "Cadastrar"
+        ).toBeInTheDocument();
     });
 
     it("deve exibir erro se a API falhar", async () => {
@@ -44,7 +43,6 @@ describe("RegisterPage", () => {
 
         render(<RegisterPage />);
 
-        // CORREÇÃO: Placeholders ajustados
         fireEvent.change(screen.getByPlaceholderText("Seu Nome"), {
             target: { value: "Novo Usuário" },
         });
@@ -72,7 +70,6 @@ describe("RegisterPage", () => {
 
         render(<RegisterPage />);
 
-        // CORREÇÃO: Placeholders ajustados
         fireEvent.change(screen.getByPlaceholderText("Seu Nome"), {
             target: { value: "Sucesso" },
         });
