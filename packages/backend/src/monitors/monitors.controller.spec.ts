@@ -59,6 +59,7 @@ describe('MonitorsController', () => {
     const mockMonitor = { id: 1, name: 'Test' };
     jest.spyOn(service, 'findOne').mockResolvedValue(mockMonitor as any);
 
+    // O controller recebe ID como string (da URL) e converte para number
     expect(await controller.findOne('1')).toEqual(mockMonitor);
     expect(service.findOne).toHaveBeenCalledWith(1);
   });

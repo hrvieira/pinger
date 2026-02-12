@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-// Mock Global do Bcrypt
+// Mock global do módulo bcrypt
 jest.mock('bcrypt', () => ({
   compare: jest.fn(),
   hash: jest.fn(),
@@ -48,7 +48,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('deve retornar um token se as credenciais forem válidas e aprovado', async () => {
+    it('deve retornar um token se as credenciais forem válidas e usuário aprovado', async () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const mockUser = {

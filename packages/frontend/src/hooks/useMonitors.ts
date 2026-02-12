@@ -15,9 +15,8 @@ export function useMonitors() {
     const [monitors, setMonitors] = useState<Monitor[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // --- HELPER: Pega o token do armazenamento ---
     const getAuthHeader = () => {
-        // Atenção: Futuramente, usar cookies ou o contexto do React para maior segurança
+        // TODO: Migrar para Cookies/Context para maior segurança
         const token = localStorage.getItem("pinger_token");
 
         const headers: Record<string, string> = {
@@ -51,7 +50,7 @@ export function useMonitors() {
     const addMonitor = async (name: string, url: string) => {
         await fetch(API_URL, {
             method: "POST",
-            headers: getAuthHeader(), // <--- ENVIA O TOKEN
+            headers: getAuthHeader(),
             body: JSON.stringify({ name, url }),
         });
         fetchMonitors();
