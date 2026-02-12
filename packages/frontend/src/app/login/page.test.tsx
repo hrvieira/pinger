@@ -1,20 +1,19 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "./page";
 
-// 1. Mock do useRouter (Next.js)
+// Mock do useRouter (Next.js)
 jest.mock("next/navigation", () => ({
     useRouter: () => ({ push: jest.fn() }),
 }));
 
-// 2. Mock do Link (Next.js)
+// Mock do Link (Next.js)
 jest.mock("next/link", () => {
     return ({ children }: { children: React.ReactNode }) => {
         return <a>{children}</a>;
     };
 });
 
-// 3. Mock do Contexto de Autenticação
-// Simulamos apenas a função login que a página usa
+// Mock do Contexto de Autenticação
 const mockLogin = jest.fn();
 jest.mock("@/context/AuthContext", () => ({
     useAuth: () => ({
@@ -22,7 +21,6 @@ jest.mock("@/context/AuthContext", () => ({
     }),
 }));
 
-// 4. Mock do Fetch Global
 global.fetch = jest.fn();
 
 describe("LoginPage", () => {
@@ -46,7 +44,6 @@ describe("LoginPage", () => {
     });
 
     it("deve exibir mensagem de erro se a API falhar", async () => {
-        // Simula uma resposta de erro da API
         (global.fetch as jest.Mock).mockResolvedValueOnce({
             ok: false,
             json: async () => ({ message: "Credenciais inválidas" }),
@@ -54,7 +51,6 @@ describe("LoginPage", () => {
 
         render(<LoginPage />);
 
-        // Preenche o formulário
         fireEvent.change(screen.getByPlaceholderText("seu@email.com"), {
             target: { value: "teste@email.com" },
         });
@@ -62,10 +58,8 @@ describe("LoginPage", () => {
             target: { value: "senhaerrada" },
         });
 
-        // Clica em entrar
         fireEvent.click(screen.getByRole("button", { name: /entrar/i }));
 
-        // Espera que a mensagem de erro apareça
         await waitFor(() => {
             expect(
                 screen.getByText("Credenciais inválidas"),
@@ -74,7 +68,6 @@ describe("LoginPage", () => {
     });
 
     it("deve chamar a função de login se a API responder com sucesso", async () => {
-        // Simula resposta de sucesso
         (global.fetch as jest.Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({
@@ -95,7 +88,6 @@ describe("LoginPage", () => {
         fireEvent.click(screen.getByRole("button", { name: /entrar/i }));
 
         await waitFor(() => {
-            // Verifica se o fetch foi chamado com os dados certos
             expect(global.fetch).toHaveBeenCalledWith(
                 "http://localhost:3000/auth/login",
                 expect.objectContaining({
@@ -106,7 +98,6 @@ describe("LoginPage", () => {
                     }),
                 }),
             );
-            // Verifica se a função login do contexto foi chamada
             expect(mockLogin).toHaveBeenCalledWith("token-falso", {
                 name: "Teste",
             });

@@ -13,7 +13,6 @@ describe("DeleteModal Component", () => {
                 onConfirm={mockOnConfirm}
             />,
         );
-        // O modal não deve estar no documento
         const modalTitle = screen.queryByText(/Deactivate monitor/i);
         expect(modalTitle).not.toBeInTheDocument();
     });
@@ -27,7 +26,6 @@ describe("DeleteModal Component", () => {
             />,
         );
 
-        // Verifica textos chave
         expect(screen.getByText(/Deactivate monitor/i)).toBeInTheDocument();
         expect(
             screen.getByText(/Are you sure you want to deactivate/i),

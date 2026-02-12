@@ -27,7 +27,7 @@ export class MonitorsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.monitorsService.findOne(+id); // O + converte string para number
+    return this.monitorsService.findOne(+id);
   }
 
   @Patch(':id')
