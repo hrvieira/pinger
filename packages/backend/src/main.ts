@@ -6,7 +6,9 @@ import express from 'express';
 const server = express();
 
 async function createApp() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+    bodyParser: false,
+  });
 
   app.enableCors({
     origin: [
