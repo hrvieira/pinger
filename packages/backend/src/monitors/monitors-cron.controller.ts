@@ -8,6 +8,6 @@ export class MonitorsCronController {
   @Get('monitores')
   async runMonitores() {
     await this.monitorsService.handleCron();
-    return { status: '✅ Monitoramento executado!' };
+    return { status: '✅ Monitoramento executado pelo cron-job.org!' };
   }
 }
