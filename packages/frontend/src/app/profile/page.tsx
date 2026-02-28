@@ -12,12 +12,14 @@ export default function ProfilePage() {
     const [newPassword, setNewPassword] = useState("");
     const [message, setMessage] = useState({ text: "", type: "" });
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage({ text: "", type: "" });
 
         try {
-            const res = await fetch("http://localhost:3000/auth/password", {
+            const res = await fetch(`${API_BASE}/auth/password`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

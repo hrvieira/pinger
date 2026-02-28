@@ -12,12 +12,14 @@ export default function RegisterPage() {
 
     const router = useRouter();
 
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage({ text: "", type: "" });
 
         try {
-            const res = await fetch("http://localhost:3000/auth/register", {
+            const res = await fetch(`${API_BASE}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, password }),
