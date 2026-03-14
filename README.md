@@ -2,10 +2,6 @@
 
 Um sistema **Full Stack** para monitoramento de disponibilidade de serviços web. O sistema verifica automaticamente a saúde de URLs cadastradas em intervalos regulares e mantém um histórico de status, ideal para prevenir inatividade em serviços PaaS (como Render, Heroku, etc).
 
-## 📸 Screenshots
-<!-- Adicione seus prints aqui depois -->
-(Adicione aqui os prints do seu sistema)
-
 ## 🛠️ Tecnologias Utilizadas
 
 ### Backend & Infra:
